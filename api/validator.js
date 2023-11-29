@@ -2,10 +2,7 @@ import Ajv from 'ajv';
 import ajvErrors from 'ajv-errors';
 import * as fs from 'fs';
 
-const path = process.cwd() + '/public/json/schema.json';
-console.log(path);
-
-const schema = JSON.parse(fs.readFileSync(path, 'utf8'));
+const schema = JSON.parse(fs.readFileSync(process.cwd() + '/public/json/schema.json', 'utf8'));
 
 const ajv = new Ajv({
   coerceTypes: true,
