@@ -23,9 +23,11 @@ export type Fields = {
   hint?: string
 }
 
-export interface FormDataInt {
+export interface FormDataInterface {
+  method: 'POST' | 'GET',
+  action: string,
   fields: Array<Fields>,
-  'disable-clientside-validation'?: boolean
+
 }
 
 export interface Error {
