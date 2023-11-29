@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "firstname": {
+      "type": "string",
+       "pattern": "^([^0-9]*)$",
+       "minLength": 1,
+       "errorMessage": {
+          "pattern": "Use only letters!",
+          "minLength": "This is a required field!"
+       }
+    },
+    "lastname": {
+      "type": "string",
+      "pattern": "^([^0-9]*)$",
+      "errorMessage": {
+        "pattern": "Use only letters!"
+     }
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 100,
+      "errorMessage": {
+        "minimum": "Age must be more than 10!",
+        "maximum": "Age must be less than 100!"
+     }
+    }
+  },
+  "required": ["_id", "firstname"],
+  "additionalProperties": false
+}

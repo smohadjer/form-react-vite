@@ -4,9 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>React Form</title>
   </head>
   <body>
+    <h1>Using JSON and JSON Schema to generate and validate forms in React</h1>
+    <p>This is a proof of concept for generating a HTML form from JSON in React. The form posts data to server which gets validated on the server using a JSON Schema before being written to database. If validation fails, errors are returned and displayed in the form, otherwise updated data in database is displayed on the page. Code available on <a href="https://github.com/smohadjer/form-react">GitHub</a></p>
+    <ul>
+        <li><a href="json/form.json">JSON for from</a></li>
+        <li><a href="json/schema.json">JSON Schema</a></li>
+        <li><a href="api/profile">API endpoint for data</a></li>
+    </ul>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

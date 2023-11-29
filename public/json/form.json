@@ -1,0 +1,30 @@
+{
+  "method": "POST",
+  "action": "api/profile",
+  "disable-clientside-validation": false,
+  "fields": [
+    {
+      "name": "_id",
+      "hidden": true
+    },
+    {
+      "name": "firstname",
+      "label": "First Name",
+      "placeholder": "leave empty to see error",
+      "hint": "Use only letters",
+      "required": true
+    },
+    {
+      "name": "lastname",
+      "label": "Last Name",
+      "placeholder": "add a number to see error",
+      "hint": "Use only letters"
+    },
+    {
+      "name": "age",
+      "label": "Age",
+      "placeholder": "enter an age less than 10 to see error",
+      "hint": "Use only digits"
+    }
+  ]
+}
