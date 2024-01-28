@@ -6,8 +6,8 @@ import { fetchJson } from './lib/lib';
 import { UserData, FormDataInterface, Error } from './lib/definitions'
 
 function App() {
-  const [formData, setFormData] = useState<FormDataInterface | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [formData, setFormData] = useState<FormDataInterface>();
+  const [userData, setUserData] = useState<UserData | null>();
 
   // add value from database to form fields
   const updateFormData = () => {
@@ -69,12 +69,16 @@ function App() {
     updateFormData();
   }, [userData]);
 
-  return (
-    <>
-      <Form data={formData} updateFormData={updateFormDataErrors} updateState={setUserData} />
-      <Profile data={userData} />
-    </>
-  )
+  if (formData && userData) {
+    return (
+      <>
+        <Form data={formData} updateFormData={updateFormDataErrors} updateState={setUserData} />
+        <Profile data={userData} />
+      </>
+    )
+  } else {
+    return <p>Loading...</p>;
+  }
 }
 
 export default App
