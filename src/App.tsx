@@ -3,10 +3,10 @@ import './App.css'
 import Form from './components/form';
 import Profile from './components/profile';
 import { fetchJson } from './lib/lib';
-import { UserData, FormDataInt, Error } from './lib/definitions'
+import { UserData, FormDataInterface, Error } from './lib/definitions'
 
 function App() {
-  const [formData, setFormData] = useState<FormDataInt | null>(null);
+  const [formData, setFormData] = useState<FormDataInterface | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
 
   // add value from database to form fields
@@ -52,13 +52,13 @@ function App() {
   }
 
   useEffect(() => {
-    fetchJson('/json/form.json').then((result) => {
-      console.log('fetch from json only once');
+    fetchJson('/json/form.json').then((result): void => {
+      console.log('fetch from json only once', result);
       setFormData(result);
     });
 
-    fetchJson('/api/profile').then((result) => {
-      console.log('fetch user data from db only once');
+    fetchJson('/api/profile').then((result): void => {
+      console.log('fetch user data from db only once', result);
       setUserData(result[0]);
     });
   }, []);

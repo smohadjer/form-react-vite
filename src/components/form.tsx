@@ -7,7 +7,7 @@ import { FormDataInterface } from './../lib/definitions'
 import { FormEvent } from 'react';
 
 export default function Form({data, updateFormData, updateState}: {
-  data: FormDataInterface,
+  data: FormDataInterface | null,
   updateFormData: Function,
   updateState: Function
 }) {
