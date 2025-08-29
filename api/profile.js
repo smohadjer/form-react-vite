@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
-import validator from './validator.js';
+import validator from './_validator.js';
 
 dotenv.config();
 
@@ -9,13 +9,13 @@ const client = new MongoClient(process.env.db_uri);
 
 async function updateDB(collection, data) {
   const userId = data._id;
-  const query = { _id: new ObjectId(userId) };
+  const query = { _id: ObjectId.createFromHexString(userId) };
 
   // removing _id property as this field can't be overwritten in db
   delete data._id;
 
   // find and update document in db
-  await collection.updateOne(query, { $set: data });
+  await collection.replaceOne(query, data);
 }
 
 export default async (req, res) => {

@@ -1,84 +1,83 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import Form from './components/form';
 import Profile from './components/profile';
 import { fetchJson } from './lib/lib';
-import { UserData, FormDataInterface, Error } from './lib/definitions'
+import { UserData, FormAttributes, FormDataInterface, ErrorType, Field } from './lib/type'
 
-function App() {
-  const [formData, setFormData] = useState<FormDataInterface>();
-  const [userData, setUserData] = useState<UserData | null>();
+export default function App() {
+  const [userData, setUserData] = useState<UserData>();
+  const [formData, setFormData] = useState<Field[]>();
+  const [formAttributes, setFormAttributes] = useState<FormAttributes>();
+  const initialData = useRef<Field[]>([]);
 
-  // add value from database to form fields
-  const updateFormData = () => {
-    if (formData && formData.fields.length) {
-      const data = {...formData};
-      data.fields.map(field => {
-        if (userData && userData.hasOwnProperty(field.name)) {
-          return field.value = userData[field.name];
-        }
-      });
-      setFormData(data);
-    }
-  }
-
-  const removeErrors = () => {
-    if (formData && formData.fields.length) {
-      const data = {...formData};
-      data.fields.map(field => {
-        if (field.hasOwnProperty('error')) {
-          delete field.error;
-          return field;
-        }
-      });
-      setFormData(data);
-    }
-  }
-
-  // add errors to form data
-  const updateFormDataErrors = (errors: Array<Error>) => {
-    if (formData && formData.fields.length) {
-      const data = {...formData};
-      errors.forEach(error => {
-        const fieldname = error.instancePath.substring(1);
-        data.fields.map(field => {
-          if (field.name === fieldname) {
-            return field.error = error.message;
-          }
-        });
-      });
-      setFormData(data);
-    }
-  }
+  console.log('formData', formData);
 
   useEffect(() => {
-    fetchJson('/json/form.json').then((result): void => {
-      console.log('fetch from json only once', result);
-      setFormData(result);
-    });
-
-    fetchJson('/api/profile').then((result): void => {
-      console.log('fetch user data from db only once', result);
-      setUserData(result[0]);
+    fetchJson('/json/form.json').then((result: FormDataInterface): void => {
+      const clonedFields = structuredClone(result.fields);
+      initialData.current = clonedFields;
+      setFormData(result.fields);
+      setFormAttributes(result.form);
     });
   }, []);
 
   useEffect(() => {
-    console.log('This effect runs every time userData state changes')
-    removeErrors();
-    updateFormData();
+    //removeErrors();
   }, [userData]);
 
-  if (formData && userData) {
-    return (
-      <>
-        <Form data={formData} updateFormData={updateFormDataErrors} updateState={setUserData} />
-        <Profile data={userData} />
-      </>
-    )
-  } else {
-    return <p>Loading...</p>;
-  }
-}
+  // const removeErrors = () => {
+  //   if (formData && formData.fields.length) {
+  //     const data = {...formData};
+  //     data.fields.map(field => {
+  //       if (field.hasOwnProperty('error')) {
+  //         delete field.error;
+  //         return field;
+  //       }
+  //     });
+  //     setFormData(data);
+  //   }
+  // }
 
-export default App
+  function populateHandler() {
+    if (userData) {
+      const clonedFields = structuredClone(initialData.current);
+      clonedFields.map(item => {
+        const valueFromDB = userData[item.name];
+        console.log(item.name, valueFromDB);
+        if (valueFromDB) {
+           item.value = valueFromDB;
+        }
+        return item;
+      });
+      setFormData(clonedFields);
+    }
+  }
+
+  function resetHandler() {
+    console.log('initial data:', initialData.current);
+    const clonedFields = structuredClone(initialData.current);
+    setFormData(clonedFields);
+  }
+
+  return (
+    (formAttributes && formData) ? (
+      <>
+        <div>
+          <Form
+            method={formAttributes.method}
+            action={formAttributes.action}
+            formData={formData}
+            setFormData={setFormData}
+            resetHandler={resetHandler}
+          />
+          <br />
+          <button type="button" onClick={populateHandler}>Populate form with data from DB</button>
+        </div>
+        <Profile userData={userData} setUserData={setUserData} />
+      </>
+    ) : (
+      <p>Loading...</p>
+    )
+  )
+}

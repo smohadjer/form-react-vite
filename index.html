@@ -6,13 +6,10 @@
     <title>React Form</title>
   </head>
   <body>
-    <h1>Using JSON and JSON Schema to generate and validate forms in React</h1>
-    <p>This is a proof of concept for generating a HTML form from JSON in React. The form posts data to server which gets validated on the server using a JSON Schema before being written to database. If validation fails, errors are returned and displayed in the form, otherwise updated data in database is displayed on the page. Code available on <a href="https://github.com/smohadjer/form-react-vite">GitHub</a></p>
-    <ul>
-        <li><a href="json/form.json">JSON for from</a></li>
-        <li><a href="json/schema.json">JSON Schema</a></li>
-        <li><a href="api/profile">API endpoint for data</a></li>
-    </ul>
+    <p>Last updated: 29.08.2025</p>
+    <h1>Generate, populate, and validate forms via JSON and JSON Schema (React)</h1>
+    <p>Example of a HTML form generated from a <a href="json/form.json">JSON file</a> via JavaScript in browser. Form is validated using the same <a href="json/schema.json">JSON Schema</a> both in browser and on the server (Node.js). Upon successful submission of form a serverless function writes data to a MongoDB instance and displays data in browser.</p>
+    <p>Code available at: <a href="https://github.com/smohadjer/form-react-vite">https://github.com/smohadjer/form-react-vite</a></p>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

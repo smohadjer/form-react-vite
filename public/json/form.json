@@ -1,29 +1,86 @@
 {
-  "method": "POST",
-  "action": "api/profile",
+  "form": {
+    "method": "POST",
+    "action": "/api/profile",
+    "disableBrowserValidation": true,
+    "disableClientSideValidation": false
+  },
   "fields": [
     {
       "name": "_id",
-      "hidden": true
+      "type": "hidden",
+      "value": "6564e8c85bcb227a610115e5"
     },
     {
       "name": "firstname",
       "label": "First Name",
       "placeholder": "leave empty to see error",
       "hint": "Use only letters",
-      "required": true
+      "required": true,
+      "type": "input",
+      "value": ""
     },
     {
       "name": "lastname",
       "label": "Last Name",
       "placeholder": "add a number to see error",
-      "hint": "Use only letters"
+      "hint": "Use only letters",
+      "type": "input",
+      "value": ""
     },
     {
       "name": "age",
       "label": "Age",
       "placeholder": "enter an age less than 10 to see error",
-      "hint": "Use only digits"
+      "hint": "Use only digits",
+      "type": "input",
+      "value": ""
+    },
+    {
+      "name": "gender",
+      "label": "Gender",
+      "type": "radio",
+      "required": true,
+      "options": [
+        {"label": "Male", "value": "male"},
+        {"label": "Female", "value": "female"}
+      ],
+      "value": ""
+    },
+    {
+      "name": "role",
+      "label": "Role",
+      "hint": "Select a role",
+      "options": [
+        {"label": "Admin", "value": "admin"},
+        {"label": "Project Manager", "value": "manager"}
+      ],
+      "type": "select",
+      "required": true,
+      "value": ""
+    },
+    {
+      "name": "privacy",
+      "label": "Privacy ",
+      "hint": "You must agree before you can submit",
+      "options": [
+        {"label": "I agree to privacy policy", "value": "agree"}
+      ],
+      "type": "checkbox",
+      "required": true,
+      "value": ""
+    },
+    {
+      "name": "hobbies",
+      "label": "Hobbies ",
+      "hint": "You can select multiple hobbies",
+      "options": [
+        {"label": "Tennis", "value": "tennis"},
+        {"label": "Chess", "value": "chess"},
+        {"label": "Poker", "value": "poker"}
+      ],
+      "type": "checkbox",
+      "value": []
     }
   ]
 }

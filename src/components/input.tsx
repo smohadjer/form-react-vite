@@ -1,12 +1,22 @@
-import { Fields } from './../lib/definitions'
+import { Field } from '../lib/type';
+import { ChangeEventHandler, useState } from 'react';
 
-export default function Input({item}: {item: Fields}) {
+type Props = {
+  handleChange: ChangeEventHandler;
+  item: Field;
+}
+
+export default function Input(props: Props) {
+  const { item, handleChange } = props;
+
   return (
     <input
       className={item.error ? "error" : ""}
       name={item.name}
-      defaultValue={item.value}
+      value={item.value}
+      onChange={handleChange}
       placeholder={item.placeholder}
+      required={item.required}
     />
   )
 }

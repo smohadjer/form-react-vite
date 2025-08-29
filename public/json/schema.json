@@ -7,10 +7,9 @@
     "firstname": {
       "type": "string",
        "pattern": "^([^0-9]*)$",
-       "minLength": 1,
        "errorMessage": {
           "pattern": "Use only letters!",
-          "minLength": "This is a required field!"
+          "required": "This is a required field!"
        }
     },
     "lastname": {
@@ -26,10 +25,30 @@
       "maximum": 100,
       "errorMessage": {
         "minimum": "Age must be more than 10!",
-        "maximum": "Age must be less than 100!"
-     }
+        "minLength": "Age must be less than 100!"
+       }
+    },
+    "gender": {
+      "enum": ["male", "female"],
+      "errorMessage": {
+        "enum": "Wrong value",
+        "required": "This is a required field!"
+       }
+    },
+    "role": {
+      "type": "string"
+    },
+    "privacy": {
+      "enum": ["agree"],
+      "errorMessage": {
+        "enum": "You should agree to privacy policy.",
+        "required": "This is a required field!"
+       }
+    },
+    "hobbies": {
+      "type": "array"
     }
   },
-  "required": ["_id", "firstname"],
+  "required": ["_id", "firstname", "role", "gender", "privacy"],
   "additionalProperties": false
 }
