@@ -3,7 +3,7 @@ import './App.css'
 import Form from './components/form';
 import Profile from './components/profile';
 import { fetchJson } from './lib/lib';
-import { UserData, FormAttributes, FormDataInterface, ErrorType, Field } from './lib/type'
+import { UserData, FormAttributes, FormDataInterface, Field } from './lib/type'
 
 export default function App() {
   const [userData, setUserData] = useState<UserData>();

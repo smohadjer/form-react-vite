@@ -4,7 +4,7 @@ import Hint from './hint.js';
 import Input from './input.js';
 import Select from './select.js';
 import Error from './error.js';
-import { FormDataInterface, Field, ErrorType } from '../lib/type.js'
+import { Field, ErrorType } from '../lib/type.js'
 import { useState, FormEvent, MouseEventHandler } from 'react'
 import Radio  from './radio';
 import Checkbox from './checkbox';
@@ -56,9 +56,8 @@ export default function Form(props: Props) {
 
     const updatedData = formData.map(item => {
       if (item.name === e.target.name) {
-        console.log(item.name, item.value);
         if (Array.isArray(item.value)) {
-          if (e.target.type === 'checkbox') {
+          if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
             if (e.target.checked) {
                 item.value = [...item.value, e.target.value];
             } else {
