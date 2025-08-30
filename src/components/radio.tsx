@@ -1,17 +1,19 @@
-import { useState, useEffect} from 'react';
 import { Field } from '../lib/type'
+import { ChangeEventHandler } from 'react';
+
 
 type Option = {
   label: string;
   value: string;
 }
 
-export default function Radio({item}: {item: Field}) {
-  const [value, setValue] = useState(item.value);
+type Props = {
+  item: Field;
+  handleChange: ChangeEventHandler;
+}
 
-  useEffect(() => {
-    setValue(item.value)
-  }, [item.value]);
+export default function Radio(props: Props) {
+  const {item, handleChange} = props;
 
   return (
     item.options?.map((option: Option, index: number) =>
@@ -21,8 +23,8 @@ export default function Radio({item}: {item: Field}) {
           id={option.value}
           name={item.name}
           value={option.value}
-          checked={value === option.value}
-          onChange={() => setValue(option.value)}
+          checked={item.value === option.value}
+          onChange={handleChange}
         />
         <label
           className="label--radio"

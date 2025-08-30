@@ -12,6 +12,7 @@ import Checkbox from './checkbox';
 type Props = {
   method: string;
   action: string;
+  disableBrowserValidation: boolean;
   formData: Field[];
   setFormData: Function;
   resetHandler: MouseEventHandler;
@@ -24,7 +25,14 @@ type Option = {
 
 export default function Form(props: Props) {
   const [disabled, setDisabled] = useState(false);
-  const { method, action, formData, setFormData, resetHandler } = props;
+  const {
+    method,
+    action,
+    disableBrowserValidation,
+    formData,
+    setFormData,
+    resetHandler
+  } = props;
 
   //add errors to form data
   const updateFormDataErrors = (errors: ErrorType[]) => {
@@ -47,6 +55,15 @@ export default function Form(props: Props) {
         });
       });
 
+      setFormData(data);
+    }
+  }
+
+  //remove errors from form data
+  const removeFormDataErrors = () => {
+    if (formData && formData.length) {
+      const data = [...formData];
+      data.map(field => field.error = "");
       setFormData(data);
     }
   }
@@ -77,6 +94,9 @@ export default function Form(props: Props) {
     event.preventDefault();
     setDisabled(true);
 
+    //reset errors
+    removeFormDataErrors();
+
     const target = event.target as HTMLFormElement;
 
     // Type definition: values can be string OR string[]
@@ -91,11 +111,19 @@ export default function Form(props: Props) {
     const json = JSON.stringify(data);
     const schema = await fetchJson('/json/schema.json');
 
+    const errorCallback = (errors: ErrorType[]) => {
+      console.log(errors);
+      updateFormDataErrors(errors);
+      setDisabled(false);
+    }
+
     if (!target.classList.contains('no-validation')) {
-      if (!validateData(event.target, data, schema)) {
+      if (!validateData(data, schema, errorCallback)) {
         return;
       }
     }
+
+    console.log('submitting form...');
 
     fetch(target.action, {
       method: target.method,
@@ -132,7 +160,7 @@ export default function Form(props: Props) {
               <label>{item.label}: {item.required ? '*' : ''}</label>
               <div>
                 <div>
-                  <Radio item={item} />
+                  <Radio item={item} handleChange={handleChange} />
                 </div>
                 <Error error={item.error} />
               </div>
@@ -199,7 +227,7 @@ export default function Form(props: Props) {
           method={method}
           action={action}
           onSubmit={submitHandler}
-          noValidate>
+          noValidate={disableBrowserValidation}>
           {getFields()}
           <div className="row">
             <div>

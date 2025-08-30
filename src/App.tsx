@@ -67,6 +67,7 @@ export default function App() {
           <Form
             method={formAttributes.method}
             action={formAttributes.action}
+            disableBrowserValidation={formAttributes.disableBrowserValidation}
             formData={formData}
             setFormData={setFormData}
             resetHandler={resetHandler}
