@@ -23,17 +23,13 @@ export default function Profile(props: Props) {
   }, []);
 
   return (
-    <div className="profile">
-      <h2>Database</h2>
-      <p>Log of data in database:</p>
-      <div id="profile">
-        { loading
-          ? <code>Loading...</code>
-          : <code>{JSON.stringify(props.userData)}</code>
-        }
-      </div>
-      <br />
-      <button onClick={fetchData}>Fetch data from DB</button>
+    <div className="callout">
+      <h2>Log of data in database</h2>
+      { loading
+        ? <code>Loading...</code>
+        : <code>{JSON.stringify(props.userData)}</code>
+      }
+      <button onClick={fetchData}>Fetch data from DB again</button>
     </div>
   )
 }

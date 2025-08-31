@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import './App.css'
+import './app.css'
 import Form from './components/form';
 import Profile from './components/profile';
 import { fetchJson } from './lib/lib';
@@ -63,17 +63,15 @@ export default function App() {
   return (
     (formAttributes && formData) ? (
       <>
-        <div>
+        <div className="callout">
+          <button type="button" onClick={populateHandler}>Populate form with data from DB</button>
           <Form
             method={formAttributes.method}
             action={formAttributes.action}
             disableBrowserValidation={formAttributes.disableBrowserValidation}
             formData={formData}
             setFormData={setFormData}
-            resetHandler={resetHandler}
-          />
-          <br />
-          <button type="button" onClick={populateHandler}>Populate form with data from DB</button>
+            resetHandler={resetHandler} />
         </div>
         <Profile userData={userData} setUserData={setUserData} />
       </>

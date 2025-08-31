@@ -34,15 +34,6 @@
   #root {
     display: flex;
   }
-
-  .form {
-    margin-right: 10px;
-  }
-}
-
-.form {
-  padding: 1em;
-  background: #ddd;
 }
 
 label {
@@ -54,25 +45,26 @@ label.label--radio {
   min-width: unset;
 }
 
-.profile {
+.callout {
   background: #ddd;
   padding: 1em;
-}
+  overflow-wrap: break-word;
 
-#profile {
-  background: white;
-  padding: 1em;
-}
+  code {
+    background: white;
+    display: block;
+    padding: 0.5em;
+    margin-bottom: 1em;
+  }
 
-#profile.loading code {
-  visibility: hidden;;
+  form {
+    margin-top: 1em;
+  }
 }
 
 @media (min-width: 768px) {
-  .form,
-  .profile {
+  .callout {
     max-width: 350px;
-    overflow-wrap: break-word;
   }
 }
 

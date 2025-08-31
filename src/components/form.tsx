@@ -220,23 +220,18 @@ export default function Form(props: Props) {
   }
 
   return formData && (
-    <div className="form">
-      <h2>Edit data in Database</h2>
-      <div id="form">
-        <form
-          method={method}
-          action={action}
-          onSubmit={submitHandler}
-          noValidate={disableBrowserValidation}>
-          {getFields()}
-          <div className="row">
-            <div>
-              <button disabled={disabled} type="submit">Submit</button>
-              <button type="button" onClick={resetHandler}>Reset</button>
-            </div>
-          </div>
-        </form>
+    <form
+      method={method}
+      action={action}
+      onSubmit={submitHandler}
+      noValidate={disableBrowserValidation}>
+      {getFields()}
+      <div className="row">
+        <div>
+          <button disabled={disabled} type="submit">Submit</button>
+          <button type="button" onClick={resetHandler}>Reset</button>
+        </div>
       </div>
-    </div>
+    </form>
   )
 }
