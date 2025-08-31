@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Form from './components/Form.js';
 import Profile from './components/Profile.js';
 import { UserData } from './type.js'
