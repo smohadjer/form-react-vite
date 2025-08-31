@@ -1,35 +1,18 @@
-import { useState, useEffect } from 'react';
-import { fetchJson } from '../lib/utils.js';
+import { UserData } from '../type.js'
 
 type Props = {
-  userData: any;
-  setUserData: Function;
+  loading: boolean;
+  data: UserData | undefined;
 };
 
 export default function Profile(props: Props) {
-  const [loading, setLoading] = useState(false);
-
-  const fetchData = () => {
-    setLoading(true);
-    fetchJson('/api/profile').then((result: any): void => {
-      console.log('fetch user data from db only once', result);
-      props.setUserData(result[0]);
-      setLoading(false);
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <div className="callout">
       <h2>Log of data in database</h2>
-      { loading
+      {props.loading
         ? <code>Loading...</code>
-        : <code>{JSON.stringify(props.userData)}</code>
+        : <code>{JSON.stringify(props.data)}</code>
       }
-      <button onClick={fetchData}>Fetch data from DB again</button>
     </div>
   )
 }

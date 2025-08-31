@@ -1,5 +1,5 @@
 
-import { useState, FormEvent, MouseEventHandler } from 'react'
+import { useState, useEffect, useRef, FormEvent } from 'react'
 import Hint from './Hint.js';
 import Input from './Input.js';
 import Select from './Select.js';
@@ -8,34 +8,53 @@ import Radio  from './Radio.js';
 import Checkbox from './Checkbox.js';
 import { validateData } from '../lib/validate.js';
 import { fetchJson } from '../lib/utils.js';
-import { Field, ErrorType } from '../type.js';
+import {
+  Field,
+  ErrorType,
+  FormDataInterface,
+  FormAttributes,
+  UserData
+} from '../type.js';
 
 type Props = {
-  method: string;
-  action: string;
-  disableBrowserValidation: boolean;
-  disableClientSideValidation: boolean;
-  formData: Field[];
-  setFormData: Function;
-  resetHandler: MouseEventHandler;
-}
-
-type Option = {
-  label: string;
-  value: string;
+  path: string;
+  data: UserData | undefined;
 }
 
 export default function Form(props: Props) {
+  const initialData = useRef<Field[]>([]);
+  const [formData, setFormData] = useState<Field[]>();
+  const [formAttributes, setFormAttributes] = useState<FormAttributes>();
   const [disabled, setDisabled] = useState(false);
-  const {
-    method,
-    action,
-    disableBrowserValidation,
-    disableClientSideValidation,
-    formData,
-    setFormData,
-    resetHandler
-  } = props;
+  const { data } = props;
+
+  useEffect(() => {
+    fetchJson(props.path).then((result: FormDataInterface): void => {
+      const clonedFields = structuredClone(result.fields);
+      initialData.current = clonedFields;
+      setFormData(result.fields);
+      setFormAttributes(result.form);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (formData && data) {
+      const clonedFields = structuredClone(initialData.current);
+      clonedFields.map(item => {
+        const valueFromDB = data[item.name];
+        if (valueFromDB) {
+            item.value = valueFromDB;
+        }
+        return item;
+      });
+      setFormData(clonedFields);
+    }
+  }, [data]);
+
+  function resetHandler() {
+    const clonedFields = structuredClone(initialData.current);
+    setFormData(clonedFields);
+  }
 
   //add errors to form data
   const updateFormDataErrors = (errors: ErrorType[]) => {
@@ -79,7 +98,7 @@ export default function Form(props: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     console.log(e.target.name, e.target.value, e.target.type);
 
-    const updatedData = formData.map(item => {
+    const updatedData = formData?.map(item => {
       if (item.name === e.target.name) {
         if (Array.isArray(item.value)) {
           if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
@@ -107,7 +126,7 @@ export default function Form(props: Props) {
 
     // Type definition: values can be string OR string[]
     const data: Record<string, string | string[]> = {};
-    formData.forEach((item) => {
+    formData?.forEach((item) => {
         if (item.value) {
           data[item.name] = item.value;
         }
@@ -123,7 +142,7 @@ export default function Form(props: Props) {
     }
 
     // client-side validation
-    if (!disableClientSideValidation) {
+    if (!formAttributes?.disableClientSideValidation) {
       if (!validateData(data, schema, errorCallback)) {
         return;
       }
@@ -153,8 +172,9 @@ export default function Form(props: Props) {
     );
   }
 
+  // generates form content
   function getFields() {
-    const fields = formData.map((item, index: number) => {
+    const fields = formData?.map((item, index: number) => {
       switch (item.type) {
         case 'hidden':
           return <input key={index} name={item.name} defaultValue={item.value} type="hidden" />
@@ -178,7 +198,7 @@ export default function Form(props: Props) {
               <label>{item.label}: {item.required ? '*' : ''}</label>
               <div>
                 <div>
-                  {item.options?.map((option: Option, index: number) =>
+                  {item.options?.map((option: {label: string; value: string;}, index: number) =>
                     <Checkbox
                       key={index}
                       name={item.name}
@@ -224,12 +244,13 @@ export default function Form(props: Props) {
     return fields;
   }
 
-  return formData && (
+  return (formAttributes && formData) ? (
     <form
-      method={method}
-      action={action}
+      method={formAttributes.method}
+      action={formAttributes.action}
       onSubmit={submitHandler}
-      noValidate={disableBrowserValidation}>
+      noValidate={formAttributes.disableBrowserValidation}>
+
       {getFields()}
       <div className="row">
         <div>
@@ -238,5 +259,5 @@ export default function Form(props: Props) {
         </div>
       </div>
     </form>
-  )
+  ) : <p>Loading...</p>
 }
