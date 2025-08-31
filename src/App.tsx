@@ -1,17 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
+import Form from './components/Form.js';
+import Profile from './components/Profile.js';
+import { fetchJson } from './lib/utils.js';
+import { UserData, FormAttributes, FormDataInterface, Field } from './type.js'
 import './app.css'
-import Form from './components/form';
-import Profile from './components/profile';
-import { fetchJson } from './lib/lib';
-import { UserData, FormAttributes, FormDataInterface, Field } from './lib/type'
 
 export default function App() {
   const [userData, setUserData] = useState<UserData>();
   const [formData, setFormData] = useState<Field[]>();
   const [formAttributes, setFormAttributes] = useState<FormAttributes>();
   const initialData = useRef<Field[]>([]);
-
-  console.log('formData', formData);
 
   useEffect(() => {
     fetchJson('/json/form.json').then((result: FormDataInterface): void => {
@@ -22,29 +20,11 @@ export default function App() {
     });
   }, []);
 
-  useEffect(() => {
-    //removeErrors();
-  }, [userData]);
-
-  // const removeErrors = () => {
-  //   if (formData && formData.fields.length) {
-  //     const data = {...formData};
-  //     data.fields.map(field => {
-  //       if (field.hasOwnProperty('error')) {
-  //         delete field.error;
-  //         return field;
-  //       }
-  //     });
-  //     setFormData(data);
-  //   }
-  // }
-
   function populateHandler() {
     if (userData) {
       const clonedFields = structuredClone(initialData.current);
       clonedFields.map(item => {
         const valueFromDB = userData[item.name];
-        console.log(item.name, valueFromDB);
         if (valueFromDB) {
            item.value = valueFromDB;
         }
@@ -55,7 +35,6 @@ export default function App() {
   }
 
   function resetHandler() {
-    console.log('initial data:', initialData.current);
     const clonedFields = structuredClone(initialData.current);
     setFormData(clonedFields);
   }
@@ -64,11 +43,14 @@ export default function App() {
     (formAttributes && formData) ? (
       <>
         <div className="callout">
-          <button type="button" onClick={populateHandler}>Populate form with data from DB</button>
+          <button type="button" onClick={populateHandler}>
+            Populate form with data from DB
+          </button>
           <Form
             method={formAttributes.method}
             action={formAttributes.action}
             disableBrowserValidation={formAttributes.disableBrowserValidation}
+            disableClientSideValidation={formAttributes.disableClientSideValidation}
             formData={formData}
             setFormData={setFormData}
             resetHandler={resetHandler} />

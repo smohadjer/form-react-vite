@@ -1,18 +1,20 @@
 
-import { validateData, fetchJson } from './../lib/lib.js';
-import Hint from './hint.js';
-import Input from './input.js';
-import Select from './select.js';
-import Error from './error.js';
-import { Field, ErrorType } from '../lib/type.js'
 import { useState, FormEvent, MouseEventHandler } from 'react'
-import Radio  from './radio';
-import Checkbox from './checkbox';
+import Hint from './Hint.js';
+import Input from './Input.js';
+import Select from './Select.js';
+import Error from './Error.js';
+import Radio  from './Radio.js';
+import Checkbox from './Checkbox.js';
+import { validateData } from '../lib/validate.js';
+import { fetchJson } from '../lib/utils.js';
+import { Field, ErrorType } from '../type.js';
 
 type Props = {
   method: string;
   action: string;
   disableBrowserValidation: boolean;
+  disableClientSideValidation: boolean;
   formData: Field[];
   setFormData: Function;
   resetHandler: MouseEventHandler;
@@ -29,6 +31,7 @@ export default function Form(props: Props) {
     method,
     action,
     disableBrowserValidation,
+    disableClientSideValidation,
     formData,
     setFormData,
     resetHandler
@@ -59,11 +62,16 @@ export default function Form(props: Props) {
     }
   }
 
-  //remove errors from form data
-  const removeFormDataErrors = () => {
+  const removeErrors = () => {
     if (formData && formData.length) {
       const data = [...formData];
       data.map(field => field.error = "");
+      // data.map(field => {
+      //   if (field.hasOwnProperty('error')) {
+      //     delete field.error;
+      //     return field;
+      //   }
+      // });
       setFormData(data);
     }
   }
@@ -93,16 +101,13 @@ export default function Form(props: Props) {
   async function submitHandler(event: FormEvent) {
     event.preventDefault();
     setDisabled(true);
-
-    //reset errors
-    removeFormDataErrors();
+    removeErrors();
 
     const target = event.target as HTMLFormElement;
 
     // Type definition: values can be string OR string[]
     const data: Record<string, string | string[]> = {};
     formData.forEach((item) => {
-        console.log(item.name, item.value);
         if (item.value) {
           data[item.name] = item.value;
         }
@@ -117,7 +122,8 @@ export default function Form(props: Props) {
       setDisabled(false);
     }
 
-    if (!target.classList.contains('no-validation')) {
+    // client-side validation
+    if (!disableClientSideValidation) {
       if (!validateData(data, schema, errorCallback)) {
         return;
       }
@@ -140,8 +146,7 @@ export default function Form(props: Props) {
         console.error(json.error);
         updateFormDataErrors(json.error);
       } else {
-        console.log(json);
-        // resetValidation($form.querySelectorAll('.row'));
+        console.log('form data saved in db');
       }
     }).catch(err =>
       console.warn('Something went wrong.', err)

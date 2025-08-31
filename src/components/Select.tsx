@@ -1,4 +1,4 @@
-import { Field } from '../lib/type'
+import { Field } from '../type'
 import { ChangeEventHandler } from 'react';
 
 type Option = {

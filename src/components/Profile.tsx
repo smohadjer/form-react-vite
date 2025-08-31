@@ -1,5 +1,5 @@
-import { fetchJson } from '../lib/lib';
 import { useState, useEffect } from 'react';
+import { fetchJson } from '../lib/utils.js';
 
 type Props = {
   userData: any;

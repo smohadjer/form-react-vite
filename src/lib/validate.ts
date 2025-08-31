@@ -4,7 +4,18 @@ import ajvErrors from 'ajv-errors';
 interface Schema extends Object {}
 interface jsonData extends Object {}
 
-export default function validate(json: jsonData, schema: Schema) {
+// client-side validation
+export function validateData(jsonData: jsonData, schema: Schema, callback: Function) {
+  let isValid = true;
+  const result = validate(jsonData, schema);
+  if (result && Array.isArray(result)) {
+    isValid = false;
+    callback(result);
+  }
+  return isValid;
+}
+
+function validate(json: jsonData, schema: Schema) {
   const ajv = new Ajv({
     coerceTypes: true,
     allErrors: true,
@@ -19,3 +30,6 @@ export default function validate(json: jsonData, schema: Schema) {
     return (validator.errors);
   }
 }
+
+
+
