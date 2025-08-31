@@ -95,4 +95,5 @@ p.error {
 
 .nowrap {
   white-space: nowrap;
+  display: block;
 }
