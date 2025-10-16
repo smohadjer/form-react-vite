@@ -1,16 +1,11 @@
-export type UserData = {
-  _id: string;
-  firstname: string;
-  lastname: string;
-  age: string;
-  role: string;
-  agree: string;
-  gender: string;
+export type Option = {
+    label: string;
+    value: string;
 }
 
 export type Field = {
-  type: 'hidden' | 'input' | 'select' | 'radio' | 'checkbox';
-  name: '_id' | 'firstname' | 'lastname' | 'age' | 'gender' | 'role' | 'agree';
+  type: string;
+  name: string;
   value: string | string[];
   error?: string;
   hidden?: boolean;
@@ -18,7 +13,7 @@ export type Field = {
   required?: boolean;
   placeholder?: string;
   hint?: string;
-  options?: any[];
+  options?: Option[];
 }
 
 export type FormDataInterface = {
@@ -31,6 +26,8 @@ export type FormAttributes = {
   action: string;
   disableBrowserValidation: boolean;
   disableClientSideValidation: boolean;
+  submitLabel?: string;
+  resetLabel?: string;
 }
 
 export type ErrorType = {

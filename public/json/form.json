@@ -3,11 +3,14 @@
     "method": "POST",
     "action": "/api/profile",
     "disableBrowserValidation": true,
-    "disableClientSideValidation": false
+    "disableClientSideValidation": false,
+    "submitLabel": "Submit",
+    "resetLabel": "Reset"
   },
   "fields": [
     {
       "name": "_id",
+      "label": "_id",
       "type": "hidden",
       "value": "6564e8c85bcb227a610115e5"
     },
@@ -73,11 +76,23 @@
     {
       "name": "hobbies",
       "label": "Hobbies ",
-      "hint": "You can select multiple hobbies",
+      "hint": "You should select at least one hobby",
       "options": [
         {"label": "Tennis", "value": "tennis"},
         {"label": "Chess", "value": "chess"},
         {"label": "Poker", "value": "poker"}
+      ],
+      "type": "checkbox",
+      "value": []
+    },
+    {
+      "name": "availability",
+      "label": "Availability",
+      "hint": "You can select multiple items",
+      "options": [
+        {"label": "5 hours/week", "value": "5"},
+        {"label": "10 hours/week", "value": "10"},
+        {"label": "20 hours/week", "value": "20"}
       ],
       "type": "checkbox",
       "value": []

@@ -1,10 +1,5 @@
-import { Field } from '../type'
+import { Field, Option } from '../type'
 import { ChangeEventHandler } from 'react';
-
-type Option = {
-  label: string;
-  value: string;
-}
 
 type Props = {
   item: Field;

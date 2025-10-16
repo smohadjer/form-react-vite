@@ -86,6 +86,8 @@ input {
 
 p.hint {
   margin: 0;
+  font-style: italic;
+  color: green;
 }
 
 p.error {

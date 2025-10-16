@@ -8,8 +8,7 @@
       "type": "string",
        "pattern": "^([^0-9]*)$",
        "errorMessage": {
-          "pattern": "Use only letters!",
-          "required": "This is a required field!"
+          "pattern": "Use only letters!"
        }
     },
     "lastname": {
@@ -41,11 +40,17 @@
     "privacy": {
       "enum": ["agree"],
       "errorMessage": {
-        "enum": "You should agree to privacy policy.",
-        "required": "This is a required field!"
+        "enum": "Not a valid value!"
        }
     },
     "hobbies": {
+      "type": "array",
+      "minItems": 1,
+      "errorMessage": {
+        "minItems": "You should provide at least one hobby."
+      }
+    },
+    "availability": {
       "type": "array"
     }
   },

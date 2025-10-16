@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import Hint from './Hint.js';
 import Input from './Input.js';
 import Select from './Select.js';
@@ -11,53 +11,28 @@ import { fetchJson } from '../lib/utils.js';
 import {
   Field,
   ErrorType,
-  FormDataInterface,
   FormAttributes,
-  UserData
 } from '../type.js';
 
 type Props = {
+  pathSchema?: string;
   path: string;
-  data: UserData | undefined;
+  data?: {[key: string]: string;};
+  initialData: Field[];
+  formAttributes: FormAttributes;
 }
 
 export default function Form(props: Props) {
-  const initialData = useRef<Field[]>([]);
-  const [formData, setFormData] = useState<Field[]>();
-  const [formAttributes, setFormAttributes] = useState<FormAttributes>();
+  const { data, pathSchema, initialData, formAttributes } = props;
+  const [formData, setFormData] = useState<Field[]>(initialData);
   const [disabled, setDisabled] = useState(false);
-  const { data } = props;
-
-  useEffect(() => {
-    fetchJson(props.path).then((result: FormDataInterface): void => {
-      const clonedFields = structuredClone(result.fields);
-      initialData.current = clonedFields;
-      setFormData(result.fields);
-      setFormAttributes(result.form);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (formData && data) {
-      const clonedFields = structuredClone(initialData.current);
-      clonedFields.map(item => {
-        const valueFromDB = data[item.name];
-        if (valueFromDB) {
-            item.value = valueFromDB;
-        }
-        return item;
-      });
-      setFormData(clonedFields);
-    }
-  }, [data]);
-
-  function resetHandler() {
-    const clonedFields = structuredClone(initialData.current);
-    setFormData(clonedFields);
-  }
-
-  //add errors to form data
+  const errorCallback = (errors: ErrorType[]) => {
+    console.log(errors);
+    updateFormDataErrors(errors);
+    setDisabled(false);
+  };
   const updateFormDataErrors = (errors: ErrorType[]) => {
+    console.log('updateForm data errors')
     if (formData && formData.length) {
       const data = [...formData];
       errors.forEach(error => {
@@ -67,7 +42,8 @@ export default function Form(props: Props) {
           fieldName = error.instancePath.substring(1);
         } else {
           if (error.keyword === 'required') {
-            fieldName = error.params.missingProperty
+            fieldName = error.params.missingProperty;
+            error.message = 'This is a required field.';
           }
         }
         data.map(field => {
@@ -79,8 +55,7 @@ export default function Form(props: Props) {
 
       setFormData(data);
     }
-  }
-
+  };
   const removeErrors = () => {
     if (formData && formData.length) {
       const data = [...formData];
@@ -93,31 +68,36 @@ export default function Form(props: Props) {
       // });
       setFormData(data);
     }
-  }
-
+  };
+  const resetHandler = () => {
+    const clonedFields = structuredClone(initialData);
+    setFormData(clonedFields);
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log(e.target.name, e.target.value, e.target.type);
-
-    const updatedData = formData?.map(item => {
-      if (item.name === e.target.name) {
-        if (Array.isArray(item.value)) {
-          if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
-            if (e.target.checked) {
-                item.value = [...item.value, e.target.value];
+      console.log('handleChange', e.target.name, e.target.value, e.target.type);
+      const updatedData = formData?.map(item => {
+        if (item.name === e.target.name) {
+            if (Array.isArray(item.value)) {
+                if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
+                    if (e.target.checked) {
+                        item.value = [...item.value, e.target.value];
+                    } else {
+                        item.value = item.value.filter(arrItem => arrItem !== e.target.value);
+                    }
+                }
             } else {
-              item.value = item.value.filter(arrItem => arrItem !== e.target.value);
+                if (e.target.type === "checkbox") {
+                    item.value = e.target.checked ? e.target.value : '';
+                } else {
+                    item.value = e.target.value;
+                }
             }
-          }
-        } else {
-          item.value = e.target.value;
         }
-      }
-      return item;
-    })
-    setFormData(updatedData);
-  }
-
-  async function submitHandler(event: FormEvent) {
+        return item;
+      });
+      setFormData(updatedData);
+  };
+  const submitHandler = async (event: FormEvent) => {
     event.preventDefault();
     setDisabled(true);
     removeErrors();
@@ -131,24 +111,17 @@ export default function Form(props: Props) {
           data[item.name] = item.value;
         }
     });
-
     const json = JSON.stringify(data);
-    const schema = await fetchJson('/json/schema.json');
-
-    const errorCallback = (errors: ErrorType[]) => {
-      console.log(errors);
-      updateFormDataErrors(errors);
-      setDisabled(false);
-    }
 
     // client-side validation
-    if (!formAttributes?.disableClientSideValidation) {
+    if (pathSchema && !formAttributes?.disableClientSideValidation) {
+      const schema = await fetchJson(pathSchema);
       if (!validateData(data, schema, errorCallback)) {
         return;
       }
     }
 
-    console.log('submitting form...');
+    console.log('submitting form after validation...');
 
     fetch(target.action, {
       method: target.method,
@@ -170,59 +143,29 @@ export default function Form(props: Props) {
     }).catch(err =>
       console.warn('Something went wrong.', err)
     );
-  }
-
-  // generates form content
-  function getFields() {
+  };
+  const getFields = () => {
     const fields = formData?.map((item, index: number) => {
       switch (item.type) {
         case 'hidden':
-          return <input key={index} name={item.name} defaultValue={item.value} type="hidden" />
+          return <input type="hidden" key={index} name={item.name} value={item.value} />
           break;
+        case 'select':
+        case 'checkbox':
         case 'radio':
           return (
             <div className="row" key={index}>
               <label>{item.label}: {item.required ? '*' : ''}</label>
               <div>
+                <Hint text={item.hint} />
                 <div>
-                  <Radio item={item} handleChange={handleChange} />
+                  {item.type === 'radio'
+                    ? <Radio item={item} handleChange={handleChange} />
+                    : (item.type === 'checkbox')
+                      ? <Checkbox item={item} handleChange={handleChange} />
+                      : <Select item={item} handleChange={handleChange} />
+                  }
                 </div>
-                <Error error={item.error} />
-              </div>
-            </div>
-          )
-          break;
-        case 'checkbox':
-          return (
-            <div className="row" key={index}>
-              <label>{item.label}: {item.required ? '*' : ''}</label>
-              <div>
-                <div>
-                  {item.options?.map((option: {label: string; value: string;}, index: number) =>
-                    <Checkbox
-                      key={index}
-                      name={item.name}
-                      label={option.label}
-                      checked={(item.value && item.value.length > 0) ? item.value.includes(option.value) : false}
-                      value={option.value}
-                      handleChange={handleChange}
-                    />
-                  )}
-                </div>
-                <Error error={item.error} />
-              </div>
-            </div>
-          )
-          break;
-        case 'select':
-          return (
-            <div className="row {item.error && row-error}" key={index}>
-              <label>{item.label}: {item.required ? '*' : ''}</label>
-              <div>
-                <Select
-                  item={item}
-                  handleChange={handleChange}
-                />
                 <Error error={item.error} />
               </div>
             </div>
@@ -242,9 +185,23 @@ export default function Form(props: Props) {
       }
     });
     return fields;
-  }
+  };
 
-  return (formAttributes && formData) ? (
+  useEffect(() => {
+    if (formData && data) {
+      const clonedFields = structuredClone(initialData);
+      clonedFields.map(item => {
+        const valueFromDB = data[item.name];
+        if (valueFromDB) {
+            item.value = valueFromDB;
+        }
+        return item;
+      });
+      setFormData(clonedFields);
+    }
+  }, [data]);
+
+  return (
     <form
       method={formAttributes.method}
       action={formAttributes.action}
@@ -254,10 +211,12 @@ export default function Form(props: Props) {
       {getFields()}
       <div className="row">
         <div>
-          <button disabled={disabled} type="submit">Submit</button>
-          <button type="button" onClick={resetHandler}>Reset</button>
+          <button disabled={disabled} type="submit">{formAttributes.submitLabel}</button>
+          {formAttributes.resetLabel &&
+            <button type="button" onClick={resetHandler}>{formAttributes.resetLabel}</button>
+          }
         </div>
       </div>
     </form>
-  ) : <p>Loading...</p>
+  )
 }

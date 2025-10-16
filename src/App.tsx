@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import Form from './components/Form.js';
 import Profile from './components/Profile.js';
-import { UserData } from './type.js'
 import { fetchJson } from './lib/utils.js';
+import formJson from '../public/json/form.json';
 import './app.css'
 
 export default function App() {
-  const [userData, setUserData] = useState<UserData>();
+  const [userData, setUserData] = useState<{[key: string]: string}>();
   const [loading, setLoading] = useState(false);
 
   const fetchData = () => {
@@ -18,10 +18,6 @@ export default function App() {
     });
   };
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   return (
     <>
       <div className="callout">
@@ -30,8 +26,11 @@ export default function App() {
         </button>
         <span>{loading ? 'Loading...' : ''}</span>
         <Form
+          pathSchema='/json/schema.json'
           path='/json/form.json'
           data={userData}
+          initialData={formJson.fields}
+          formAttributes={formJson.form}
         />
       </div>
       <Profile data={userData} loading={loading} />

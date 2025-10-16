@@ -1,32 +1,36 @@
 import { ChangeEventHandler } from 'react';
+import { Field, Option } from '../type'
 
 type Props = {
-  label: string;
-  value: string;
-  checked: boolean;
-  name: string;
+  item: Field;
   handleChange: ChangeEventHandler;
 }
 
 export default function Checkbox(props: Props) {
-  const {name, value, label, checked, handleChange} = props;
+  const {item, handleChange} = props;
+  const isChecked = (item: Field, option: Option) => {
+      if (Array.isArray(item.value)) {
+          return item.value.includes(option.value);
+      } else {
+          return (item.value === option.value) ? true : false;
+      }
+  };
 
   return (
-      <span className="nowrap">
-        <input
-          type="checkbox"
-          value={value}
-          id={value}
-          name={name}
-          checked={checked}
-          onChange={handleChange}
-        />
-        <label
-          className="label--checkbox"
-          htmlFor={value}>
-            {label}
+    item.options?.map((option: Option, index: number) =>
+      <span key={index} className="nowrap">
+        <label className="label--checkbox">
+          <input
+            type="checkbox"
+            name={item.name}
+            value={option.value}
+            checked={isChecked(item, option)}
+            onChange={handleChange}
+          />
+          {option.label}
         </label>
       </span>
+    )
   )
 }
 
