@@ -86,7 +86,7 @@ export default function Form(props: Props) {
                     }
                 }
             } else {
-                if (e.target.type === "checkbox") {
+                if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
                     item.value = e.target.checked ? e.target.value : '';
                 } else {
                     item.value = e.target.value;

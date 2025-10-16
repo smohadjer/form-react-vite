@@ -1,8 +1,7 @@
-import { UserData } from '../type.js'
 
 type Props = {
   loading: boolean;
-  data: UserData | undefined;
+  data: {[key: string]: string} | undefined;
 };
 
 export default function Profile(props: Props) {
